@@ -1,17 +1,17 @@
 #include "classes.h"
 #include <iostream>
 
-void poker_dealer::draw_table(const card *flop_pointer){
+// void poker_dealer::draw_table(const card *flop_pointer){
 
-	for (unsigned int i = 0; i < 3; i++){
-		flop.push_back(flop_pointer[i]);
-	}
-	sort_vector(flop);
-	turn = flop_pointer[3];
-	river = flop_pointer[4];
+// 	for (unsigned int i = 0; i < 3; i++){
+// 		flop.push_back(flop_pointer[i]);
+// 	}
+// 	sort_vector(flop);
+// 	turn = flop_pointer[3];
+// 	river = flop_pointer[4];
 
-	return;
-}
+// 	return;
+// }
 
 void poker_dealer::reset_round(){
 

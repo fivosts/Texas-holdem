@@ -2,6 +2,7 @@
 #define __CLASSES_H__
 #include "api.h"
 #include "sqlite3.h"
+#include <string>
 
 class poker_player{
 
@@ -9,7 +10,14 @@ public:
 	poker_player(){}
 	~poker_player(){}
 
-	void draw_hand(const card &first_card, const card &second_card);
+	inline void draw_hand(const card &first_card, const card &second_card){
+
+		hand.push_back(first_card);
+		hand.push_back(second_card);
+		sort_vector(hand);
+	
+		return;
+	}
 	void reset_round();
 	void print_state() const;
 	inline void set_win_state(bool state){
@@ -45,7 +53,18 @@ public:
 	poker_dealer(){}
 	~poker_dealer(){}
 
-	void draw_table(const card *flop_pointer);
+	inline void draw_table(const card *flop_pointer){
+
+		for (unsigned int i = 0; i < 3; i++){
+			flop.push_back(flop_pointer[i]);
+		}
+		sort_vector(flop);
+		turn = flop_pointer[3];
+		river = flop_pointer[4];
+
+		return;
+	}
+	
 	void reset_round();
 	void print_state() const;
 	inline const std::vector<card> & get_flop() const{
@@ -103,7 +122,7 @@ private:
 
 	sqlite3 *db_conn;
 	sqlite3_stmt *db_stmt;
-	const char *db_name;
+	std::string db_name;
 };
 
 #endif

@@ -10,22 +10,20 @@ db_communicator::db_communicator(unsigned int players){
 	//lets name the dbs -> poker_db_X.db
 
 	struct stat buffer;
-	std::string file_name = "./database/poker_db_" + std::to_string(players) + ".db";
-	bool file_exists = (stat(file_name.c_str(), &buffer) == 0 ? true : false);
-
-	db_name = file_name.c_str();
+	db_name = "./database/poker_db_" + std::to_string(players) + ".db";
+	bool file_exists = (stat(db_name.c_str(), &buffer) == 0 ? true : false);
 
 	// std::cout << "File exists? " << file_exists << std::endl;
 
 	//if db does not exist, create it. Else just connect with it.
 
 	if(!file_exists){
-		if (sqlite3_open(db_name, &db_conn) != SQLITE_OK){
+		if (sqlite3_open(db_name.c_str(), &db_conn) != SQLITE_OK){
 			std::cout << sqlite3_errmsg(db_conn) << std::endl;
 			exit(1);
 		}
 		else {
-			std::cout << file_name << " created" << std::endl;
+			std::cout << db_name << " created" << std::endl;
 		}
 		if (!prepare_stage_write("CREATE TABLE HAND (ID integer, Hand text, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
 			sqlite3_close(db_conn);
@@ -45,12 +43,12 @@ db_communicator::db_communicator(unsigned int players){
 		}
 	}
 	else{
-		if (sqlite3_open(db_name, &db_conn) != SQLITE_OK){
+		if (sqlite3_open(db_name.c_str(), &db_conn) != SQLITE_OK){
 			std::cout << sqlite3_errmsg(db_conn) << std::endl;
 			sqlite3_close(db_conn);
 		}
 		else{
-			std::cout << file_name << " connected" << std::endl;
+			std::cout << db_name << " connected successfully" << std::endl;
 		}	
 	}
 }
@@ -61,6 +59,7 @@ db_communicator::~db_communicator(){
 	if (rc != SQLITE_OK){
 		std::cout << "Error closing the database: " << rc << " " << sqlite3_errstr(rc) << std::endl;
 	}
+	std::cout << db_name << " disconnected successfully" << std::endl;
 }
 
 bool db_communicator::prepare_stage_write(const char *command){

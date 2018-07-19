@@ -1,14 +1,14 @@
 #include "classes.h"
 #include <iostream>
 
-void poker_player::draw_hand(const card &first_card, const card &second_card){
+// void poker_player::draw_hand(const card &first_card, const card &second_card){
 
-	hand.push_back(first_card);
-	hand.push_back(second_card);
-	sort_vector(hand);
+// 	hand.push_back(first_card);
+// 	hand.push_back(second_card);
+// 	sort_vector(hand);
 	
-	return;
-}
+// 	return;
+// }
 
 void poker_player::reset_round(){
 
