@@ -18,6 +18,7 @@ extern std::map<unsigned int, std::string> winning_combos;
 
 void sort_vector(std::vector<card> &cards);
 long long unsigned int calculate_card_vector_id(const std::vector<card> &cards);
+std::vector<card> id_to_vector(long long unsigned int id, unsigned int stage);
 void poker_comb_finder(poker_player &player, const poker_dealer &dealer);
 
 #endif

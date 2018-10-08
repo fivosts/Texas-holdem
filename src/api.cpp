@@ -52,6 +52,23 @@ long long unsigned int calculate_card_vector_id(const std::vector<card> &cards){
 	return id;
 }
 
+std::vector<card> id_to_vector(long long unsigned int id, unsigned int stage){
+
+	std::vector<card> cur_card_v;
+	card cur_card;
+	long long unsigned int div;
+
+	for(unsigned int i = 0; i < stage; i++){
+
+		div = (id / pow(52, stage - 1 - i));
+		cur_card.colour = div / 13;
+		cur_card.value = div % 13;
+		id = id - (div * pow(52, stage - 1 - i));
+		cur_card_v.push_back(cur_card);
+	}
+
+	return cur_card_v;
+}
 
 void poker_comb_finder(poker_player &player, const poker_dealer &dealer){
 

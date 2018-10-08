@@ -10,7 +10,7 @@ db_communicator::db_communicator(unsigned int players){
 	//lets name the dbs -> poker_db_X.db
 
 	struct stat buffer;
-	db_name = "./database/poker_db_" + std::to_string(players) + ".db";
+	db_name = "/home/fivosts/my_projects/poker_player/database/poker_db_" + std::to_string(players) + ".db";
 	bool file_exists = (stat(db_name.c_str(), &buffer) == 0 ? true : false);
 
 	// std::cout << "File exists? " << file_exists << std::endl;
@@ -25,19 +25,35 @@ db_communicator::db_communicator(unsigned int players){
 		else {
 			std::cout << db_name << " created" << std::endl;
 		}
-		if (!prepare_stage_write("CREATE TABLE HAND (ID integer, Hand text, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
+		// if (!prepare_stage_write("CREATE TABLE HAND (ID integer, Hand text, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
+		// 	sqlite3_close(db_conn);
+		// 	exit(1);
+		// }
+		// if (!prepare_stage_write("CREATE TABLE FLOP (ID integer, Hand text, Table_cards text, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
+		// 	sqlite3_close(db_conn);
+		// 	exit(1);
+		// }
+		// if (!prepare_stage_write("CREATE TABLE TURN (ID integer, Hand text, Table_cards text, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
+		// 	sqlite3_close(db_conn);
+		// 	exit(1);
+		// }
+		// if (!prepare_stage_write("CREATE TABLE RIVER (ID integer, Hand text, Table_cards text, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
+		// 	sqlite3_close(db_conn);
+		// 	exit(1);
+		// }
+		if (!prepare_stage_write("CREATE TABLE HAND (ID integer, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
 			sqlite3_close(db_conn);
 			exit(1);
 		}
-		if (!prepare_stage_write("CREATE TABLE FLOP (ID integer, Hand text, Table_cards text, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
+		if (!prepare_stage_write("CREATE TABLE FLOP (ID integer, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
 			sqlite3_close(db_conn);
 			exit(1);
 		}
-		if (!prepare_stage_write("CREATE TABLE TURN (ID integer, Hand text, Table_cards text, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
+		if (!prepare_stage_write("CREATE TABLE TURN (ID integer, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
 			sqlite3_close(db_conn);
 			exit(1);
 		}
-		if (!prepare_stage_write("CREATE TABLE RIVER (ID integer, Hand text, Table_cards text, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
+		if (!prepare_stage_write("CREATE TABLE RIVER (ID integer, Encounters integer, Wins integer, PRIMARY KEY (ID))")){
 			sqlite3_close(db_conn);
 			exit(1);
 		}
@@ -46,6 +62,7 @@ db_communicator::db_communicator(unsigned int players){
 		if (sqlite3_open(db_name.c_str(), &db_conn) != SQLITE_OK){
 			std::cout << sqlite3_errmsg(db_conn) << std::endl;
 			sqlite3_close(db_conn);
+			exit(1);
 		}
 		else{
 			std::cout << db_name << " connected successfully" << std::endl;
@@ -140,46 +157,39 @@ void db_communicator::store_to_db(const game * const &poker_game){
 		//store to hand db
 		hand_cards = poker_game->player_list[i].get_hand();
 		id = calculate_card_vector_id(hand_cards);
-		command = "SELECT * FROM HAND WHERE ID = " + std::to_string(id);
-		// std::cout << command << std::endl;
-		query = prepare_stage_read(command.c_str());
+		// command = "SELECT * FROM HAND WHERE ID = " + std::to_string(id);
+		// query = prepare_stage_read(command.c_str());
 
-		if (query == (const unsigned char*)"error"){
+		// if (query == (const unsigned char*)"error"){
+		if (false){
 			sqlite3_close(db_conn);
 			std::cout << "something went wrong" << std::endl;
 			exit(1);
 		}
 		else{
-			if (query == 0){ //new entry
+			// if (query == 0){ //new entry
 
-				command = "INSERT INTO HAND (ID, Hand, Encounters, Wins) VALUES ("
-								+ std::to_string(id) + ", '"
-								+ [](const std::vector<card> &player){
-									std::string hand_card;
-									for (std::vector<card>::const_iterator it = player.begin(); it != player.end(); it++){
-										hand_card += card_values[(*it).value] + card_colour[(*it).colour];
-									}
-									return hand_card;
-								}(hand_cards) + "', "
-								+ "1, "
-								+ std::to_string(poker_game->player_list[i].is_winner()) + ")";
-				// std::cout << command <<std::endl;
-				if (!prepare_stage_write(command.c_str())){
-					sqlite3_close(db_conn);
-					exit(1);
-				}
-			}
-			else{ //update old entry
-				// std::cout << "Entry already exists " << (const char*)query << std::endl;
+			// 	command = "INSERT INTO HAND (ID, Encounters, Wins) VALUES ("
+			// 					+ std::to_string(id) + ", "
+			// 					+ "1, "
+			// 					+ std::to_string(poker_game->player_list[i].is_winner()) + ")";
+			// 	// std::cout << command <<std::endl;
+			// 	if (!prepare_stage_write(command.c_str())){
+			// 		sqlite3_close(db_conn);
+			// 		exit(1);
+			// 	}
+			// }
+			// else{ //update old entry
+			// 	// std::cout << "Entry already exists " << (const char*)query << std::endl;
 
-				command = "UPDATE HAND SET Encounters = Encounters + 1, Wins = Wins + "
-							+ std::to_string(poker_game->player_list[i].is_winner());
-				// std::cout << command <<std::endl;
-				if (!prepare_stage_write(command.c_str())){
-					sqlite3_close(db_conn);
-					exit(1);
-				}
-			}
+			// 	command = "UPDATE HAND SET Encounters = Encounters + 1, Wins = Wins + "
+			// 				+ std::to_string(poker_game->player_list[i].is_winner());
+			// 	// std::cout << command <<std::endl;
+			// 	if (!prepare_stage_write(command.c_str())){
+			// 		sqlite3_close(db_conn);
+			// 		exit(1);
+			// 	}
+			// }
 		}
 
 		//store to flop db
@@ -197,24 +207,47 @@ void db_communicator::store_to_db(const game * const &poker_game){
 			exit(1);
 		}
 		else{
+			// if (query == 0){ //new entry
+
+			// 	command = "INSERT INTO FLOP (ID, Hand, Table_cards, Encounters, Wins) VALUES ("
+			// 					+ std::to_string(id) + ", '"
+			// 					+ [](const std::vector<card> &player){
+			// 						std::string hand_card;
+			// 						for (std::vector<card>::const_iterator it = player.begin(); it != player.end(); it++){
+			// 							hand_card += card_values[(*it).value] + card_colour[(*it).colour];
+			// 						}
+			// 						return hand_card;
+			// 					}(hand_cards) + "', '"
+			// 					+ [](const std::vector<card> &flop){
+			// 						std::string hand_card;
+			// 						for (std::vector<card>::const_iterator it = flop.begin(); it != flop.end(); it++){
+			// 							hand_card += card_values[(*it).value] + card_colour[(*it).colour];
+			// 						}
+			// 						return hand_card;
+			// 					}(table_cards) + "', "
+			// 					+ "1, "
+			// 					+ std::to_string(poker_game->player_list[i].is_winner()) + ")";
+			// 	// std::cout << command <<std::endl;
+			// 	if (!prepare_stage_write(command.c_str())){
+			// 		sqlite3_close(db_conn);
+			// 		exit(1);
+			// 	}
+			// }
+			// else{ //update old entry
+			// 	// std::cout << "Entry already exists " << (const char*)query << std::endl;
+
+			// 	command = "UPDATE FLOP SET Encounters = Encounters + 1, Wins = Wins + "
+			// 				+ std::to_string(poker_game->player_list[i].is_winner());
+			// 	// std::cout << command <<std::endl;
+			// 	if (!prepare_stage_write(command.c_str())){
+			// 		sqlite3_close(db_conn);
+			// 		exit(1);
+			// 	}
+			// }
 			if (query == 0){ //new entry
 
-				command = "INSERT INTO FLOP (ID, Hand, Table_cards, Encounters, Wins) VALUES ("
-								+ std::to_string(id) + ", '"
-								+ [](const std::vector<card> &player){
-									std::string hand_card;
-									for (std::vector<card>::const_iterator it = player.begin(); it != player.end(); it++){
-										hand_card += card_values[(*it).value] + card_colour[(*it).colour];
-									}
-									return hand_card;
-								}(hand_cards) + "', '"
-								+ [](const std::vector<card> &flop){
-									std::string hand_card;
-									for (std::vector<card>::const_iterator it = flop.begin(); it != flop.end(); it++){
-										hand_card += card_values[(*it).value] + card_colour[(*it).colour];
-									}
-									return hand_card;
-								}(table_cards) + "', "
+				command = "INSERT INTO FLOP (ID, Encounters, Wins) VALUES ("
+								+ std::to_string(id) + ", "
 								+ "1, "
 								+ std::to_string(poker_game->player_list[i].is_winner()) + ")";
 				// std::cout << command <<std::endl;
@@ -256,24 +289,47 @@ void db_communicator::store_to_db(const game * const &poker_game){
 			exit(1);
 		}
 		else{
+			// if (query == 0){ //new entry
+
+			// 	command = "INSERT INTO TURN (ID, Hand, Table_cards, Encounters, Wins) VALUES ("
+			// 					+ std::to_string(id) + ", '"
+			// 					+ [](const std::vector<card> &player){
+			// 						std::string hand_card;
+			// 						for (std::vector<card>::const_iterator it = player.begin(); it != player.end(); it++){
+			// 							hand_card += card_values[(*it).value] + card_colour[(*it).colour];
+			// 						}
+			// 						return hand_card;
+			// 					}(hand_cards) + "', '"
+			// 					+ [](const std::vector<card> &flop){
+			// 						std::string hand_card;
+			// 						for (std::vector<card>::const_iterator it = flop.begin(); it != flop.end(); it++){
+			// 							hand_card += card_values[(*it).value] + card_colour[(*it).colour];
+			// 						}
+			// 						return hand_card;
+			// 					}(table_cards) + "', "
+			// 					+ "1, "
+			// 					+ std::to_string(poker_game->player_list[i].is_winner()) + ")";
+
+			// 	if (!prepare_stage_write(command.c_str())){
+			// 		sqlite3_close(db_conn);
+			// 		exit(1);
+			// 	}
+			// }
+			// else{ //update old entry
+			// 	// std::cout << "Entry already exists " << (const char*)query << std::endl;
+
+			// 	command = "UPDATE TURN SET Encounters = Encounters + 1, Wins = Wins + "
+			// 				+ std::to_string(poker_game->player_list[i].is_winner());
+			// 	// std::cout << command <<std::endl;
+			// 	if (!prepare_stage_write(command.c_str())){
+			// 		sqlite3_close(db_conn);
+			// 		exit(1);
+			// 	}
+			// }
 			if (query == 0){ //new entry
 
-				command = "INSERT INTO TURN (ID, Hand, Table_cards, Encounters, Wins) VALUES ("
-								+ std::to_string(id) + ", '"
-								+ [](const std::vector<card> &player){
-									std::string hand_card;
-									for (std::vector<card>::const_iterator it = player.begin(); it != player.end(); it++){
-										hand_card += card_values[(*it).value] + card_colour[(*it).colour];
-									}
-									return hand_card;
-								}(hand_cards) + "', '"
-								+ [](const std::vector<card> &flop){
-									std::string hand_card;
-									for (std::vector<card>::const_iterator it = flop.begin(); it != flop.end(); it++){
-										hand_card += card_values[(*it).value] + card_colour[(*it).colour];
-									}
-									return hand_card;
-								}(table_cards) + "', "
+				command = "INSERT INTO TURN (ID, Encounters, Wins) VALUES ("
+								+ std::to_string(id) + ", "
 								+ "1, "
 								+ std::to_string(poker_game->player_list[i].is_winner()) + ")";
 
@@ -287,7 +343,7 @@ void db_communicator::store_to_db(const game * const &poker_game){
 
 				command = "UPDATE TURN SET Encounters = Encounters + 1, Wins = Wins + "
 							+ std::to_string(poker_game->player_list[i].is_winner());
-				std::cout << command <<std::endl;
+				// std::cout << command <<std::endl;
 				if (!prepare_stage_write(command.c_str())){
 					sqlite3_close(db_conn);
 					exit(1);
@@ -314,24 +370,47 @@ void db_communicator::store_to_db(const game * const &poker_game){
 			exit(1);
 		}
 		else{
+			// if (query == 0){ //new entry
+
+			// 	command = "INSERT INTO RIVER (ID, Hand, Table_cards, Encounters, Wins) VALUES ("
+			// 					+ std::to_string(id) + ", '"
+			// 					+ [](const std::vector<card> &player){
+			// 						std::string hand_card;
+			// 						for (std::vector<card>::const_iterator it = player.begin(); it != player.end(); it++){
+			// 							hand_card += card_values[(*it).value] + card_colour[(*it).colour];
+			// 						}
+			// 						return hand_card;
+			// 					}(hand_cards) + "', '"
+			// 					+ [](const std::vector<card> &flop){
+			// 						std::string hand_card;
+			// 						for (std::vector<card>::const_iterator it = flop.begin(); it != flop.end(); it++){
+			// 							hand_card += card_values[(*it).value] + card_colour[(*it).colour];
+			// 						}
+			// 						return hand_card;
+			// 					}(table_cards) + "', "
+			// 					+ "1, "
+			// 					+ std::to_string(poker_game->player_list[i].is_winner()) + ")";
+
+			// 	if (!prepare_stage_write(command.c_str())){
+			// 		sqlite3_close(db_conn);
+			// 		exit(1);
+			// 	}
+			// }
+			// else{ //update old entry
+			// 	// std::cout << "Entry already exists " << (const char*)query << std::endl;
+
+			// 	command = "UPDATE RIVER SET Encounters = Encounters + 1, Wins = Wins + "
+			// 				+ std::to_string(poker_game->player_list[i].is_winner());
+			// 	// std::cout << command <<std::endl;
+			// 	if (!prepare_stage_write(command.c_str())){
+			// 		sqlite3_close(db_conn);
+			// 		exit(1);
+			// 	}
+			// }
 			if (query == 0){ //new entry
 
-				command = "INSERT INTO RIVER (ID, Hand, Table_cards, Encounters, Wins) VALUES ("
-								+ std::to_string(id) + ", '"
-								+ [](const std::vector<card> &player){
-									std::string hand_card;
-									for (std::vector<card>::const_iterator it = player.begin(); it != player.end(); it++){
-										hand_card += card_values[(*it).value] + card_colour[(*it).colour];
-									}
-									return hand_card;
-								}(hand_cards) + "', '"
-								+ [](const std::vector<card> &flop){
-									std::string hand_card;
-									for (std::vector<card>::const_iterator it = flop.begin(); it != flop.end(); it++){
-										hand_card += card_values[(*it).value] + card_colour[(*it).colour];
-									}
-									return hand_card;
-								}(table_cards) + "', "
+				command = "INSERT INTO RIVER (ID, Encounters, Wins) VALUES ("
+								+ std::to_string(id) + ", "
 								+ "1, "
 								+ std::to_string(poker_game->player_list[i].is_winner()) + ")";
 
@@ -341,11 +420,9 @@ void db_communicator::store_to_db(const game * const &poker_game){
 				}
 			}
 			else{ //update old entry
-				// std::cout << "Entry already exists " << (const char*)query << std::endl;
 
 				command = "UPDATE RIVER SET Encounters = Encounters + 1, Wins = Wins + "
 							+ std::to_string(poker_game->player_list[i].is_winner());
-				std::cout << command <<std::endl;
 				if (!prepare_stage_write(command.c_str())){
 					sqlite3_close(db_conn);
 					exit(1);
@@ -355,8 +432,5 @@ void db_communicator::store_to_db(const game * const &poker_game){
 
 	}
 
-
-
-	//finish
 	return;
 }
