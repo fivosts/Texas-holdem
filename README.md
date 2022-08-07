@@ -12,4 +12,3 @@ B) Because I wanted to get my hands on the C++/python sqlite module and learn ho
 C) It was more fun.
 D) Why not ?
 
-If you have any good ideas about this project, contact me (fivos_ts@hotmail.com) . Enjoy!
